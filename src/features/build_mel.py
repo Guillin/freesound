@@ -1,7 +1,7 @@
 import numpy as np
 import librosa
 import pandas as pd
-import sklearn
+from sklearn import preprocessing
 from tqdm import tqdm
 
 
@@ -13,9 +13,9 @@ SAVE_PATH = '../../data/processed/mel/train_curated_mel.npy'
 
 print("INIT\n")
 
-def wav2mel(file_path, n_mels=128, hop_length = 512, max_pad_len=None, normalize=True, scaling=False):
+def wav2mel(wav_file, n_mels, hop_length, max_pad_len=None, normalize=True, scaling=False):
 
-    wave, sr = librosa.load(file_path, mono=True)
+    wave, sr = librosa.load(wav_file, mono=True)
     
     if 0 < len(wave): # workaround: 0 length causes error
         wave, _ = librosa.effects.trim(wave) # trim, top_db=default(60)
@@ -28,7 +28,7 @@ def wav2mel(file_path, n_mels=128, hop_length = 512, max_pad_len=None, normalize
 
     # scaling
     if scaling:
-        S = sklearn.preprocessing.scale(S, axis=1)
+        S = preprocessing.scale(S, axis=1)
 
     if max_pad_len:
         if S.shape[1] > max_pad_len:
@@ -43,7 +43,7 @@ def wav2mel(file_path, n_mels=128, hop_length = 512, max_pad_len=None, normalize
     return S
 
 
-def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length = 512, max_pad_len=None):
+def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length = 512, max_pad_len=None, normalize=True, scaling=False):
     wavfiles = pd.read_pickle(input_path)['path']
 
 
@@ -51,7 +51,7 @@ def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length 
     mel_vectors = []
 
     for wavfile in tqdm(wavfiles):
-        S = wav2mel('../' + wavfile, n_mels=n_mels, hop_length=hop_length, max_pad_len=max_pad_len)
+        S = wav2mel('../' + wavfile, n_mels=n_mels, hop_length=hop_length, max_pad_len=max_pad_len, normalize=normalize, scaling=scaling)
         mel_vectors.append(S)
 
 
