@@ -13,7 +13,7 @@ SAVE_PATH = '../../data/processed/mel/train_curated_mel.npy'
 
 print("INIT\n")
 
-def wav2mel(wav_file, n_mels, hop_length, max_pad_len=None, normalize=True, scaling=False):
+def wav2mel(wav_file, n_mels, hop_length, max_pad_len, normalize, scaling, padding_mode):
 
     wave, sr = librosa.load(wav_file, mono=True)
     
@@ -35,7 +35,7 @@ def wav2mel(wav_file, n_mels, hop_length, max_pad_len=None, normalize=True, scal
             S = S[:,:max_pad_len]
         else:
             pad_width = max_pad_len - S.shape[1]
-            S = np.pad(S, pad_width=((0, 0), (0, pad_width)), mode='constant')
+            S = np.pad(S, pad_width=((0, 0), (0, pad_width)), mode=padding_mode)
     
     S = librosa.power_to_db(S)
     S = S.astype(np.float32)
@@ -43,7 +43,7 @@ def wav2mel(wav_file, n_mels, hop_length, max_pad_len=None, normalize=True, scal
     return S
 
 
-def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length = 512, max_pad_len=None, normalize=True, scaling=False):
+def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length=512, max_pad_len=None, normalize=True, scaling=False, padding_mode='constant'):
     wavfiles = pd.read_pickle(input_path)['path']
 
 
@@ -51,7 +51,7 @@ def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length 
     mel_vectors = []
 
     for wavfile in tqdm(wavfiles):
-        S = wav2mel('../' + wavfile, n_mels=n_mels, hop_length=hop_length, max_pad_len=max_pad_len, normalize=normalize, scaling=scaling)
+        S = wav2mel('../' + wavfile, n_mels=n_mels, hop_length=hop_length, max_pad_len=max_pad_len, normalize=normalize, scaling=scaling, padding_mode=padding_mode)
         mel_vectors.append(S)
 
 
