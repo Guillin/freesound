@@ -5,8 +5,8 @@ from sklearn import preprocessing
 from tqdm import tqdm
 
 
-DATA_PATH = '../../data/processed/train_curated.pkl'
-SAVE_PATH = '../../data/processed/mel/train_curated_mel.npy'
+DATA_PATH = '../../data/processed/test.pkl'
+SAVE_PATH = '../../data/processed/mel/test_mel128_len200.npy'
 
 # Set the hop length; at 22050 Hz, 512 samples ~= 23ms
 # also N of FFT is defined with this value
@@ -61,6 +61,6 @@ def gen_mel(input_path=DATA_PATH, output_path=SAVE_PATH, n_mels=128, hop_length=
 
 print("runing....\n")
 
-gen_mel(DATA_PATH, SAVE_PATH, n_mels=128, hop_length=512, max_pad_len=200)
+gen_mel(DATA_PATH, SAVE_PATH, n_mels=128, hop_length=512, max_pad_len=200, padding_mode='constant')
 
 print("END\n")
